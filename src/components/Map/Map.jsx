@@ -1,52 +1,59 @@
 import React from "react";
-import GoogleMapReact from "google-map-react";
-// import { Paper, Typography, useMediaQuery } from "@material-ui/core";
-// import LocationOnOutlinedIcon from "@material-ui/icons/LocationOnOutlined";
-// import Rating from "@material-ui/lab/Rating";
-
+import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import useStyles from "./styles";
+
+const containerStyle = {
+  display: "flex",
+  width: "100%",
+  height: "80%",
+  // Set height to "100%"
+  margin: "70px 0 0 0", // Adjust the value to match the navbar height
+};
+
+const center = {
+  lat: 37.8,
+  lng: -122.25,
+};
 
 function Map() {
   const classes = useStyles();
-  // const isMobile = useMediaQuery("(min-width:600px)");
 
-  const coordinates = { lat: 0, lng: 0 };
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+  });
+  // eslint-disable-next-line
+  const [map, setMap] = React.useState(null);
 
-  // useEffect(() => {
-  //   const loadMapAPI = () => {
-  //     const script = document.createElement("script");
-  //     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyB1POlWB8A-TN4Jufgd01PctfvGFInAd3Y`;
-  //     script.async = true;
-  //     document.body.appendChild(script);
-  //   };
+  const onLoad = React.useCallback(function callback(map) {
+    // This is just an example of getting and using the map instance!!! don't just blindly copy!
+    const bounds = new window.google.maps.LatLngBounds(center);
+    map.fitBounds(bounds);
 
-  //   loadMapAPI();
-  // }, []);
+    setMap(map);
+  }, []);
 
-  // const handleMapChange = (mapProps, map) => {
-  //   // Handle map change event here
-  //   console.log("Map changed:", mapProps, map);
-  // };
+  const onUnmount = React.useCallback(function callback(map) {
+    setMap(null);
+  }, []);
 
-  // const handleMarkerClick = (event) => {
-  //   // Handle marker click event here
-  //   console.log("Marker clicked:", event);
-  // };
-
-  return (
-    <div className={classes.mapContainer}>
-      <GoogleMapReact
-        bootstrapURLKeys={{ key: "AIzaSyB1POlWB8A-TN4Jufgd01PctfvGFInAd3Y" }}
-        defaultCenter={coordinates}
-        center={coordinates}
-        defaultZoom={14}
-        margin={[50, 50, 50, 50]}
-        options={""}
-        onChange={""}
-        onChildClick={""}
-      ></GoogleMapReact>
-    </div>
+  return isLoaded ? (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={14}
+      onLoad={onLoad}
+      onUnmount={onUnmount}
+      className={classes.mapContainer}
+    >
+      {/* Child components, such as markers, info windows, etc. */}
+      <></>
+    </GoogleMap>
+  ) : (
+    <>
+      <h1>Loading...</h1>
+    </>
   );
 }
 
-export default Map;
+export default React.memo(Map);

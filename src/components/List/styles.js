@@ -16,7 +16,8 @@ export default makeStyles((theme) => ({
     alignItems: "center",
   },
   container: {
-    padding: "25px",
+    paddingTop: "80px",
+    paddingLeft: "25px",
   },
   marginBottom: {
     marginBottom: "30px",
